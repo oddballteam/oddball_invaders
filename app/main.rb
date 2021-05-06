@@ -7,8 +7,8 @@ def tick(args)
 
   movement = Movement.new(args)
 
-  args.state.x += movement.keyboard[0]
-  args.state.y += movement.keyboard[1]
+  args.state.x = movement.keyboard[:x]
+  args.state.y = movement.keyboard[:y]
 
   # if args.inputs.mouse.click
   #   args.state.x, args.state.y = movement.mouse

@@ -6,12 +6,9 @@ class Movement
   attr_accessor :args
 
   def keyboard
-    return [0, 0] if out_of_bounds?
+    return current_position if out_of_bounds?
 
-    [
-     args.inputs.keyboard.left_right * 10,
-     args.inputs.keyboard.up_down * 10
-    ]
+    new_position
   end
 
   # def mouse
@@ -32,12 +29,19 @@ class Movement
     }
   end
 
+  def new_position
+    {
+      x: args.state.x + (args.inputs.keyboard.left_right * 10),
+      y: args.state.y + (args.inputs.keyboard.up_down * 10)
+    }
+  end
+
   def future_position
   end
 
   def out_of_bounds?
-    x = current_position[:x]
-    y = current_position[:y]
+    x = new_position[:x]
+    y = new_position[:y]
 
     x > args.grid.w ||
       x < 0 ||
