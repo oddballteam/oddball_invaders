@@ -1,17 +1,53 @@
 class Player
   def initialize(args)
     @args = args
+
+    args.state.player.x ||= 576
+    args.state.player.y ||= 100
   end
 
   attr_accessor :args
 
   def move
-    return current_position if out_of_bounds?
+    args.state.player.x = position[:x]
+    args.state.player.y = position[:y]
 
-    new_position
+    args.outputs.sprites << [
+      position[:x],
+      position[:y],
+      125,
+      125,
+      'sprites/player.png',
+    ]
+  end
+
+  def shoot
+    if args.inputs.keyboard.space # if the space bar is pressed
+      args.state.laser.x = args.state.player.x + 40
+      args.state.laser.y = args.state.player.y + 110
+      args.state.laser.angle = 0
+    end
+
+    if args.state.laser
+      args.outputs.sprites << [
+        args.state.laser.x,
+        args.state.laser.y,
+        40,
+        40,
+        'sprites/firepower.png',
+        args.state.laser.angle
+      ]
+
+      args.state.laser.angle += 10
+      args.state.laser.y += 10
+    end
   end
 
   private
+
+  def position
+    out_of_bounds? ? current_position : new_position
+  end
 
   def current_position
     {
