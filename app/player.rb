@@ -1,12 +1,12 @@
 class Player
+  attr_accessor :args
+
   def initialize(args)
     @args = args
 
     args.state.player.x ||= 576
-    args.state.player.y ||= 100
+    args.state.player.y ||= 50
   end
-
-  attr_accessor :args
 
   def move
     args.state.player.x = position[:x]
@@ -17,7 +17,7 @@ class Player
       position[:y],
       125,
       125,
-      'sprites/player.png',
+      'sprites/player.png'
     ]
   end
 
@@ -29,16 +29,36 @@ class Player
     end
 
     if args.state.laser
+      if args.state.enemy
+        if args.state.laser.y.between?(args.state.enemy.y - 20, args.state.enemy.y + 50) &&
+           args.state.laser.x.between?(args.state.enemy.x - 20, args.state.enemy.x + 50)
+          args.state.explosion.x = args.state.enemy.x
+          args.state.explosion.y = args.state.enemy.y
+          args.state.enemy.x = nil
+          args.state.enemy.y = nil
+          args.state.score += 1
+        end
+      end
+
+      if args.state.explosion
+        args.outputs.sprites << [
+            args.state.explosion.x - 50,
+            args.state.explosion.y - 50,
+            150,
+            150,
+            'sprites/boom.png'
+          ]
+      end
+
       args.outputs.sprites << [
         args.state.laser.x,
         args.state.laser.y,
         40,
         40,
-        'sprites/firepower.png',
-        args.state.laser.angle
+        'sprites/ruby.png',
+        180
       ]
 
-      args.state.laser.angle += 10
       args.state.laser.y += 10
     end
   end
@@ -67,8 +87,8 @@ class Player
     x = new_position[:x]
     y = new_position[:y]
 
-    x > (args.grid.w - 125) ||
-      x < 0 ||
+    x > (args.grid.w - 100) ||
+      x < -25 ||
     y > (args.grid.h - 125) ||
       y < 0
   end
