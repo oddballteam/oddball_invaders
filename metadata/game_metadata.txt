@@ -1,0 +1,6 @@
+devid=oddball-invaders
+devtitle=oddball-invaders
+gameid=oddball-invaders
+gametitle=oddball-invaders
+version=0.1
+compile_ruby=false
