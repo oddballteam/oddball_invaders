@@ -3,7 +3,7 @@ class ScoreKeeper
 
   def initialize(args)
     @args = args
-    @score = 0
+    @score ||= 0
   end
 
   def update
@@ -11,6 +11,6 @@ class ScoreKeeper
   end
 
   def update_score
-    score += 1
+    @score += 1
   end
 end
