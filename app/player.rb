@@ -1,8 +1,9 @@
 class Player
-  attr_accessor :args
+  attr_accessor :args, :laser
 
-  def initialize(args)
+  def initialize(args, laser:)
     @args = args
+    @laser = laser
 
     args.state.player.x ||= 576
     args.state.player.y ||= 50
@@ -21,46 +22,8 @@ class Player
     ]
   end
 
-  def shoot
-    if args.inputs.keyboard.space # if the space bar is pressed
-      args.state.laser.x = args.state.player.x + 40
-      args.state.laser.y = args.state.player.y + 110
-      args.state.laser.angle = 0
-    end
-
-    if args.state.laser
-      if args.state.enemy
-        if args.state.laser.y.between?(args.state.enemy.y - 20, args.state.enemy.y + 50) &&
-           args.state.laser.x.between?(args.state.enemy.x - 20, args.state.enemy.x + 50)
-          args.state.explosion.x = args.state.enemy.x
-          args.state.explosion.y = args.state.enemy.y
-          args.state.enemy.x = nil
-          args.state.enemy.y = nil
-          args.state.score += 1
-        end
-      end
-
-      if args.state.explosion
-        args.outputs.sprites << [
-            args.state.explosion.x - 50,
-            args.state.explosion.y - 50,
-            150,
-            150,
-            'sprites/boom.png'
-          ]
-      end
-
-      args.outputs.sprites << [
-        args.state.laser.x,
-        args.state.laser.y,
-        40,
-        40,
-        'sprites/ruby.png',
-        180
-      ]
-
-      args.state.laser.y += 10
-    end
+  def fire
+    laser.shoot
   end
 
   private

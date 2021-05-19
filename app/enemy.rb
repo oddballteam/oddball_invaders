@@ -1,16 +1,17 @@
 class Enemy
-  attr_accessor :args
+  attr_accessor :args, :index
 
-  def initialize(args)
+  def initialize(args, index:)
     @args = args
+    @index = index
 
-    args.state.enemy.x = (args.state.enemy.x.nil? || out_of_bounds?) ? rand(args.grid.w - 150) : args.state.enemy.x
-    args.state.enemy.y = (args.state.enemy.y.nil? || out_of_bounds?) ? args.grid.h + 100 : args.state.enemy.y
+    args.state.enemies[index].x = (args.state.enemies[index].x.nil? || out_of_bounds?) ? rand(args.grid.w - 150) : args.state.enemies[index].x
+    args.state.enemies[index].y = (args.state.enemies[index].y.nil? || out_of_bounds?) ? args.grid.h + 100 : args.state.enemies[index].y
   end
 
   def move
-    args.state.enemy.x = position[:x]
-    args.state.enemy.y = position[:y]
+    args.state.enemies[index].x = position[:x]
+    args.state.enemies[index].y = position[:y]
 
     args.outputs.sprites << [
       position[:x],
@@ -25,8 +26,8 @@ class Enemy
 
   def position
     {
-      x: args.state.enemy.x,
-      y: args.state.enemy.y - 2
+      x: args.state.enemies[index].x,
+      y: args.state.enemies[index].y - 2
     }
   end
 
