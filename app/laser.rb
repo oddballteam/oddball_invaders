@@ -26,34 +26,30 @@ class Laser
   end
 
   def handle_collision
-    # if an_enemy? && laser_hit?
-    #   render_explosion_position
-      args.state.score_keeper.increment_score
-    # end
+    temp_enemies = args.state.enemies
+    args.state.enemies.each do |enemy|
+      if @y.between?(enemy.y - 20, enemy.y + 50) &&
+         @x.between?(enemy.x - 20, enemy.x + 50)
+        temp_enemies.delete(enemy)
+        render_explosion(enemy.x, enemy.y)
+      end
+    end
+    args.state.enemies = temp_enemies
+
+    args.state.score_keeper.increment_score
   end
 
   private
 
   attr_accessor :args, :x, :y
 
-  # def render_explosion_position
-  #   args.state.enemies.each do |enemy|
-  #     args.state.explosion.x = args.state.enemy.x
-  #     args.state.explosion.y = args.state.enemy.y
-  #     args.state.enemy.x = nil
-  #     args.state.enemy.y = nil
-  #   end
-  # end
-
-  # def render_explosion_sprite
-  #   if args.state.explosion
-  #     args.outputs.sprites << [
-  #       args.state.explosion.x - 50,
-  #       args.state.explosion.y - 50,
-  #       150,
-  #       150,
-  #       'sprites/boom.png'
-  #     ]
-  #   end
-  # end
+  def render_explosion(x, y)
+    args.outputs.sprites << [
+      x - 50,
+      y - 50,
+      150,
+      150,
+      'sprites/boom.png'
+    ]
+  end
 end
