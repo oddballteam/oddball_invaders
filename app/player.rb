@@ -1,17 +1,20 @@
+require 'app/laser.rb'
+
 class Player
-  attr_accessor :args, :laser
+  attr_accessor :args, :lasers, :x, :y
 
-  def initialize(args, laser:)
+  def initialize(args)
     @args = args
-    @laser = laser
+    @lasers = []
+    @cooldown = 0
 
-    args.state.player.x ||= 576
-    args.state.player.y ||= 50
+    @x ||= 576
+    @y ||= 50
   end
 
-  def move
-    args.state.player.x = position[:x]
-    args.state.player.y = position[:y]
+  def handle_move
+    @x = position[:x]
+    @y = position[:y]
 
     args.outputs.sprites << [
       position[:x],
@@ -22,8 +25,20 @@ class Player
     ]
   end
 
-  def fire
-    laser.shoot
+  def handle_shoot
+    if args.inputs.keyboard.space && @cooldown == 0 # if the space bar is pressed
+      @lasers.push(Laser.new(args, x: @x + 40, y: @y + 110))
+      @cooldown += 10
+    end
+
+    temp_lasers = []
+    @lasers.each do |laser|
+      laser.propel
+      laser.hit? ? laser.handle_collision : temp_lasers.push(laser)
+    end
+    @lasers = temp_lasers
+
+    @cooldown -= 1 if @cooldown > 0
   end
 
   private
@@ -34,15 +49,15 @@ class Player
 
   def current_position
     {
-      x: args.state.player.x,
-      y: args.state.player.y
+      x: @x,
+      y: @y
     }
   end
 
   def new_position
     {
-      x: args.state.player.x + (args.inputs.keyboard.left_right * 10),
-      y: args.state.player.y + (args.inputs.keyboard.up_down * 10)
+      x: @x + (args.inputs.keyboard.left_right * 10),
+      y: @y + (args.inputs.keyboard.up_down * 10)
     }
   end
 

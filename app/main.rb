@@ -1,23 +1,21 @@
 require 'app/player.rb'
 require 'app/enemy.rb'
 require 'app/score_keeper.rb'
-require 'app/laser.rb'
 
 def tick(args)
-  score_keeper = ScoreKeeper.new(args)
-  score_keeper.update
+  args.state.score_keeper ||= ScoreKeeper.new(args)
+  args.state.score_keeper.display_score
 
-  player = Player.new(args, laser: Laser.new(args))
-  player.move
-  player.fire
+  args.state.player ||= Player.new(args)
+  args.state.player.handle_move
+  args.state.player.handle_shoot
 
-  create_enemies(args)
-end
-
-def create_enemies(args)
-  enemy_0 = Enemy.new(args, index: 0)
-  enemy_0.move
-
-  enemy_1 = Enemy.new(args, index: 1)
-  enemy_1.move
+  args.state.enemies ||= []
+  args.state.enemies.push(Enemy.new(args)) if (args.state.tick_count % (rand(40) + 150)) == 0
+  temp_enemies = []
+  args.state.enemies.each do |enemy|
+    enemy.handle_move
+    temp_enemies.push(enemy) unless enemy.out_of_bounds?
+  end
+  args.state.enemies = temp_enemies
 end

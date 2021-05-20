@@ -6,11 +6,11 @@ class ScoreKeeper
     @score ||= 0
   end
 
-  def update
+  def display_score
     args.outputs.labels << [1175, 700, "Score: #{score}"]
   end
 
-  def update_score
+  def increment_score
     @score += 1
   end
 end
