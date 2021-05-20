@@ -1,10 +1,17 @@
 class Enemy
-  attr_accessor :args, :x, :y
+  attr_accessor :args, :x, :y, :sprite
 
   def initialize(args)
     @args = args
     @x = rand(args.grid.w - 150)
     @y = args.grid.h + 100
+    
+    sprites = [
+      'sprites/js.png',
+      'sprites/react.png',
+      'sprites/tuple.png'
+    ]
+    @sprite = sprites[rand(sprites.count)]
   end
 
   def handle_move
@@ -16,7 +23,7 @@ class Enemy
       position[:y],
       70,
       70,
-      'sprites/js.png'
+      @sprite
     ]
   end
 
