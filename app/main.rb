@@ -27,11 +27,17 @@ private
 def initialize(args)
   set_background_color(args, [10, 10, 20])
   args.state.colors.text ||= [255, 255, 255]
-  args.outputs.sounds << 'sounds/background.wav' if (args.state.tick_count / 2669) == 0
+  args.outputs.sounds << 'sounds/background.wav' if play_background_music?(args)
 end
 
 def set_background_color(args, color)
   args.state.colors.background ||= color
   args.state.night ||= [args.grid.rect, args.state.colors.background]
   args.outputs.solids << args.state.night
+end
+
+def play_background_music?(args)
+  return true if args.state.tick_count == 0
+
+  (args.state.tick_count / 2669) == 1
 end
