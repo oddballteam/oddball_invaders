@@ -1,16 +1,21 @@
+require 'app/laser.rb'
+
 class Player
-  attr_accessor :args
+  attr_accessor :args, :lasers, :lives, :x, :y
 
   def initialize(args)
     @args = args
+    @lasers = []
+    @cooldown = 0
+    @lives ||= 3
 
-    args.state.player.x ||= 576
-    args.state.player.y ||= 50
+    @x ||= 576
+    @y ||= 50
   end
 
-  def move
-    args.state.player.x = position[:x]
-    args.state.player.y = position[:y]
+  def handle_move
+    @x = position[:x]
+    @y = position[:y]
 
     args.outputs.sprites << [
       position[:x],
@@ -21,46 +26,36 @@ class Player
     ]
   end
 
-  def shoot
-    if args.inputs.keyboard.space # if the space bar is pressed
-      args.state.laser.x = args.state.player.x + 40
-      args.state.laser.y = args.state.player.y + 110
-      args.state.laser.angle = 0
+  def handle_shoot
+    if args.inputs.keyboard.space && @cooldown == 0 # if the space bar is pressed
+      @lasers.push(Laser.new(args, x: @x + 40, y: @y + 110))
+      @cooldown += 10
     end
 
-    if args.state.laser
-      if args.state.enemy
-        if args.state.laser.y.between?(args.state.enemy.y - 20, args.state.enemy.y + 50) &&
-           args.state.laser.x.between?(args.state.enemy.x - 20, args.state.enemy.x + 50)
-          args.state.explosion.x = args.state.enemy.x
-          args.state.explosion.y = args.state.enemy.y
-          args.state.enemy.x = nil
-          args.state.enemy.y = nil
-          args.state.score += 1
-        end
-      end
+    temp_lasers = []
+    @lasers.each do |laser|
+      laser.propel
+      laser.hit? ? laser.handle_collision : temp_lasers.push(laser)
+    end
+    @lasers = temp_lasers
 
-      if args.state.explosion
-        args.outputs.sprites << [
-            args.state.explosion.x - 50,
-            args.state.explosion.y - 50,
-            150,
-            150,
-            'sprites/boom.png'
-          ]
-      end
+    @cooldown -= 1 if @cooldown > 0
+  end
 
+  def display_lives
+    lives.times do |life|
       args.outputs.sprites << [
-        args.state.laser.x,
-        args.state.laser.y,
-        40,
-        40,
-        'sprites/ruby.png',
-        180
+        life * 25 + 10,
+        50.from_top,
+        25,
+        25,
+        'sprites/oddheart.png'
       ]
-
-      args.state.laser.y += 10
     end
+  end
+
+  def remove_life
+    @lives -= 1
   end
 
   private
@@ -71,15 +66,15 @@ class Player
 
   def current_position
     {
-      x: args.state.player.x,
-      y: args.state.player.y
+      x: @x,
+      y: @y
     }
   end
 
   def new_position
     {
-      x: args.state.player.x + (args.inputs.keyboard.left_right * 10),
-      y: args.state.player.y + (args.inputs.keyboard.up_down * 10)
+      x: @x + (args.inputs.keyboard.left_right * 10),
+      y: @y + (args.inputs.keyboard.up_down * 10)
     }
   end
 

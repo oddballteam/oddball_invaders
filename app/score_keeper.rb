@@ -1,13 +1,20 @@
 class ScoreKeeper
-  attr_accessor :args
-  
+  attr_accessor :args, :score
+
   def initialize(args)
     @args = args
-
-    args.state.score ||= 0
+    @score ||= 0
   end
 
-  def update
-    args.outputs.labels << [1175, 700, "Score: #{args.state.score}"]
+  def display_score
+    args.outputs.labels << [1175, 700, "Score: #{score}", args.state.colors.text]
+  end
+
+  def increment_score
+    @score += 1
+  end
+
+  def decrement_score
+    @score -= 1
   end
 end
