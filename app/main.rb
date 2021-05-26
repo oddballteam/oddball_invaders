@@ -23,6 +23,10 @@ def tick(args)
   args.state.enemies = temp_enemies
 
   end_game(args) if game_over?(args)
+
+  if args.inputs.mouse.click && game_over?(args)
+    start_game!(args)
+  end
 end
 
 private
@@ -47,11 +51,22 @@ end
 
 def end_game(args)
   args.state.enemies = []
+  args.state.previous_score = args.state.score_keeper.score
   args.outputs.labels << [
     args.grid.w/2,
     args.grid.h/2,
-    "Game Over",
+    "GAME OVER",
     125,
+    1,
+    255,
+    255,
+    255
+  ]
+  args.outputs.labels << [
+    args.grid.w/2,
+    args.grid.h/2 - 200,
+    "Your Score: #{args.state.previous_score}",
+    30,
     1,
     255,
     255,
@@ -61,4 +76,9 @@ end
 
 def game_over?(args)
   args.state.player.lives == 0
+end
+
+def start_game!(args)
+  args.state.player = Player.new(args)
+  args.state.score_keeper.reset_score
 end
