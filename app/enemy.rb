@@ -5,7 +5,7 @@ class Enemy
     @args = args
     @x = rand(args.grid.w - 150)
     @y = args.grid.h + 100
-    
+
     sprites = [
       'sprites/js.png',
       'sprites/react.png',

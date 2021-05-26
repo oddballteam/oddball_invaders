@@ -1,12 +1,13 @@
 require 'app/laser.rb'
 
 class Player
-  attr_accessor :args, :lasers, :x, :y
+  attr_accessor :args, :lasers, :lives, :x, :y
 
   def initialize(args)
     @args = args
     @lasers = []
     @cooldown = 0
+    @lives ||= 3
 
     @x ||= 576
     @y ||= 50
@@ -39,6 +40,22 @@ class Player
     @lasers = temp_lasers
 
     @cooldown -= 1 if @cooldown > 0
+  end
+
+  def display_lives
+    lives.times do |life|
+      args.outputs.sprites << [
+        life * 25 + 10,
+        50.from_top,
+        25,
+        25,
+        'sprites/oddheart.png'
+      ]
+    end
+  end
+
+  def remove_life
+    @lives -= 1
   end
 
   private
