@@ -24,6 +24,8 @@ class Player
       125,
       'sprites/player.png'
     ]
+
+    thrusters
   end
 
   def handle_shoot
@@ -86,5 +88,22 @@ class Player
       x < -25 ||
     y > (args.grid.h - 125) ||
       y < 0
+  end
+
+  def thrusters
+    return unless current_position != new_position
+
+    2.times do |time|
+      args.outputs.solids << [
+        position[:x] + (55 * time) + 30,
+        position[:y] - 40,
+        5,
+        60,
+        0,
+        206,
+        209,
+        128
+      ]
+    end
   end
 end
