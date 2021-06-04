@@ -20,7 +20,7 @@ class Star
 
   def update(top_of_starfield:)
     decrement_y_position(top_of_starfield: top_of_starfield)
-    twinkle
+    twinkle if twinkler?
   end
 
   private
@@ -31,7 +31,11 @@ class Star
   end
 
   def twinkle
-    @alpha = random_value_in_range if @twinkler
+    @alpha = random_value_in_range
+  end
+
+  def twinkler?
+    @twinkler
   end
 
   def random_value_in_range(start: 0, stop: 255)
