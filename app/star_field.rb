@@ -23,7 +23,7 @@ class StarField
         star.blue,
         star.alpha
       ]
-      star.decrement_y_position(top_of_starfield: @args.grid.top)
+      star.update(top_of_starfield: @args.grid.top)
     end
   end
 
