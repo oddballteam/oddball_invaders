@@ -22,7 +22,7 @@ class Player
       position[:y],
       125,
       125,
-      'sprites/player.png'
+      'sprites/player2.png'
     ]
 
     thrusters
@@ -93,17 +93,39 @@ class Player
   def thrusters
     return unless current_position != new_position
 
-    2.times do |time|
-      args.outputs.solids << [
-        position[:x] + (55 * time) + 30,
-        position[:y] - 40,
-        5,
-        60,
-        0,
-        206,
-        209,
-        128
-      ]
+    20.times do |time|
+      args.outputs.solids << {
+        x: position[:x] + 25,
+        y: (position[:y] - 20) - (50 * time),
+        w: 5,
+        h: 50,
+        r: 150,
+        g: 226,
+        b: 229,
+        a: 225 - (30 * time)
+      }
+
+      args.outputs.solids << {
+        x: position[:x] + 95,
+        y: (position[:y] - 20) - (50 * time),
+        w: 5,
+        h: 50,
+        r: 150,
+        g: 226,
+        b: 229,
+        a: 225 - (30 * time)
+      }
+
+      args.outputs.solids << {
+        x: position[:x] + 30,
+        y: (position[:y] - 20) - (50 * time),
+        w: 65,
+        h: 50,
+        r: 0,
+        g: 206,
+        b: 209,
+        a: 128 - (30 * time)
+      }
     end
   end
 end
