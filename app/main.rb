@@ -1,9 +1,13 @@
 require 'app/player.rb'
 require 'app/enemy.rb'
 require 'app/score_keeper.rb'
+require 'app/star_field.rb'
 
 def tick(args)
   initialize(args)
+
+  args.state.star_field ||= StarField.new(args)
+  args.state.star_field.draw
 
   args.state.score_keeper ||= ScoreKeeper.new(args)
   args.state.score_keeper.display_score
@@ -50,6 +54,7 @@ def play_background_music?(args)
 end
 
 def end_game(args)
+  args.state.star_field.stars = []
   args.state.enemies = []
   args.state.previous_score = args.state.score_keeper.score
   args.outputs.labels << [
@@ -81,4 +86,7 @@ end
 def start_game!(args)
   args.state.player = Player.new(args)
   args.state.score_keeper.reset_score
+
+  args.state.star_field = StarField.new(args)
+  args.state.star_field.draw
 end
