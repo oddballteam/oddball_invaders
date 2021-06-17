@@ -1,13 +1,14 @@
 require 'app/laser.rb'
 
 class Player
-  attr_accessor :args, :lasers, :lives, :x, :y
+  attr_accessor :args, :lasers, :lives, :x, :y, :sprite
 
   def initialize(args)
     @args = args
     @lasers = []
     @cooldown = 0
     @lives ||= 3
+    @sprite ||= ['player', 'player2'].sample
 
     @x ||= 576
     @y ||= 50
@@ -22,7 +23,7 @@ class Player
       position[:y],
       125,
       125,
-      'sprites/player.png'
+      "sprites/#{sprite}.png"
     ]
 
     thrusters
@@ -80,6 +81,14 @@ class Player
     }
   end
 
+  def moving_left?
+    new_position[:x] < current_position[:x]
+  end
+
+  def moving_right?
+    new_position[:x] > current_position[:x]
+  end
+
   def out_of_bounds?
     x = new_position[:x]
     y = new_position[:y]
@@ -93,17 +102,45 @@ class Player
   def thrusters
     return unless current_position != new_position
 
-    2.times do |time|
-      args.outputs.solids << [
-        position[:x] + (55 * time) + 30,
-        position[:y] - 40,
-        5,
-        60,
-        0,
-        206,
-        209,
-        128
-      ]
+    20.times do |time|
+      height = moving_right? ? 45 : 30
+      opacity = rand(40) + 185
+      args.outputs.solids << {
+        x: position[:x] + 30,
+        y: position[:y] - (height * time),
+        w: 5,
+        h: height,
+        r: 150,
+        g: 226,
+        b: 229,
+        a: opacity - (10 * time)
+      }
+
+      height = moving_left? ? 45 : 30
+      args.outputs.solids << {
+        x: position[:x] + 90,
+        y: position[:y] - (height * time),
+        w: 5,
+        h: height,
+        r: 150,
+        g: 226,
+        b: 229,
+        a: opacity - (10 * time)
+      }
+
+      if sprite == 'player2'
+        opacity = rand(20) + 108
+        args.outputs.solids << {
+          x: position[:x] + 35,
+          y: position[:y] - (30 * time),
+          w: 60,
+          h: 30,
+          r: 0,
+          g: 206,
+          b: 209,
+          a: opacity - (10 * time)
+        }
+      end
     end
   end
 end
