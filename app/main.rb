@@ -12,7 +12,7 @@ def tick(args)
   args.state.score_keeper ||= ScoreKeeper.new(args)
   args.state.score_keeper.display_score
 
-  args.state.player ||= Player.new(args)
+  args.state.player ||= Player.create(args)
   args.state.player.handle_move
   args.state.player.handle_shoot
   args.state.player.display_lives
@@ -84,7 +84,7 @@ def game_over?(args)
 end
 
 def start_game!(args)
-  args.state.player = Player.new(args)
+  args.state.player = Player.create(args)
   args.state.score_keeper.reset_score
 
   args.state.star_field = StarField.new(args)

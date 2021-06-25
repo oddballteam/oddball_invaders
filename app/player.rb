@@ -1,14 +1,18 @@
 require 'app/laser.rb'
+require 'app/player_profile.rb'
 
 class Player
-  attr_accessor :args, :lasers, :lives, :x, :y, :sprite
+  attr_accessor :args, :lasers, :lives, :x, :y
+
+  def self.create(args)
+    [PlayerOne, PlayerTwo].sample.new(args)
+  end
 
   def initialize(args)
     @args = args
     @lasers = []
     @cooldown = 0
     @lives ||= 3
-    @sprite ||= ['player', 'player2'].sample
 
     @x ||= 576
     @y ||= 50
@@ -32,7 +36,7 @@ class Player
   def handle_shoot
     if args.inputs.keyboard.space && @cooldown == 0 # if the space bar is pressed
       @lasers.push(Laser.new(args, x: @x + 40, y: @y + 110))
-      @cooldown += 10
+      @cooldown += laser_cooldown
     end
 
     temp_lasers = []
@@ -61,6 +65,22 @@ class Player
     @lives -= 1
   end
 
+  protected
+
+  def thrusters
+    return unless current_position != new_position
+
+    _thrusters
+  end
+
+  def speed
+    raise StandardError, 'define speed in subclass!'
+  end
+
+  def _thrusters
+    raise StandardError, 'define _thrusters in subclass!'
+  end
+
   private
 
   def position
@@ -76,8 +96,8 @@ class Player
 
   def new_position
     {
-      x: @x + (args.inputs.keyboard.left_right * 10),
-      y: @y + (args.inputs.keyboard.up_down * 10)
+      x: @x + (args.inputs.keyboard.left_right * speed),
+      y: @y + (args.inputs.keyboard.up_down * speed)
     }
   end
 
@@ -97,50 +117,5 @@ class Player
       x < -25 ||
     y > (args.grid.h - 125) ||
       y < 0
-  end
-
-  def thrusters
-    return unless current_position != new_position
-
-    20.times do |time|
-      height = moving_right? ? 45 : 30
-      opacity = rand(40) + 185
-      args.outputs.solids << {
-        x: position[:x] + 30,
-        y: position[:y] - (height * time),
-        w: 5,
-        h: height,
-        r: 150,
-        g: 226,
-        b: 229,
-        a: opacity - (10 * time)
-      }
-
-      height = moving_left? ? 45 : 30
-      args.outputs.solids << {
-        x: position[:x] + 90,
-        y: position[:y] - (height * time),
-        w: 5,
-        h: height,
-        r: 150,
-        g: 226,
-        b: 229,
-        a: opacity - (10 * time)
-      }
-
-      if sprite == 'player2'
-        opacity = rand(20) + 108
-        args.outputs.solids << {
-          x: position[:x] + 35,
-          y: position[:y] - (30 * time),
-          w: 60,
-          h: 30,
-          r: 0,
-          g: 206,
-          b: 209,
-          a: opacity - (10 * time)
-        }
-      end
-    end
   end
 end
